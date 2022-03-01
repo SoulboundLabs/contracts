@@ -14,20 +14,13 @@ contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
     bytes public latestData;
 
     // true if merkle root has been stored
-    mapping(bytes32 => bool) private _merkleRoots;
+    mapping(bytes32 => bool) public _merkleRoots;
 
     // maps BadgeDefinitionNumber to registries of winners (1 if badge has been won, 0 if not)
     mapping(uint256 => mapping(address => uint256)) private _balances;
 
     constructor(address _fxChild) FxBaseChildTunnel(_fxChild) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
-    function postMerkleRoot(
-        bytes32 root
-    ) public {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not EmblemRegistry admin");
-        _merkleRoots[root] = true;
     }
 
     function mint(
@@ -57,8 +50,6 @@ contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
         return _balances[id][owner];
     }
 
-
-
     function _processMessageFromRoot(
         uint256 stateId,
         address sender,
@@ -69,9 +60,5 @@ contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
         latestData = data;
 
         _merkleRoots[abi.decode(data, (bytes32))] = true;
-    }
-
-    function sendMessageToRoot(bytes memory message) public {
-        _sendMessageToRoot(message);
     }
 }
