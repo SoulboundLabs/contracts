@@ -20,12 +20,12 @@ library EmblemLibrary {
     bytes32[] memory merkleProof,
     uint256[] memory positions,
     bytes32 merkleRoot
-  ) public view returns (bool) {
+  ) public pure returns (bool) {
 
     return EmblemMerkleProof.verify(merkleProof, positions, merkleRoot, hashBadge(badgeStruct));
   }
 
-  function hashBadge(BadgeStruct memory badgeStruct) public view returns (bytes32) {
+  function hashBadge(BadgeStruct memory badgeStruct) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(badgeStruct.winner, badgeStruct.badgeDefinitionNumber));
   }
 }
@@ -46,7 +46,7 @@ library EmblemMerkleProof {
         uint256[] memory positions,
         bytes32 root,
         bytes32 leaf
-    ) internal view returns (bool) {
+    ) internal pure returns (bool) {
         bytes32 computedHash = leaf;
 
         for (uint256 i = 0; i < proof.length; i++) {
