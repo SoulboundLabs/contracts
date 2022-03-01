@@ -25,5 +25,5 @@
    - points the Registry contract at layer 1 SubgraphController contract
 
 ### The contracts are now ready for bridged communication from Goerli to Mumbai.
-- ```npx hardhat postMerkleRootFromSubgraph --index 0 --size 256 --network goerli``` queries a subgraph for badge awards with ids 0-256, hashes them into a merkle root, and posts it to the SubgraphController so it can bridge it to layer 2 while still exploiting subgraph capabilities for full reputational transparency. The root won't be available in the layer 2 Registry contract until the next state sync.
+- ```npx hardhat postMerkleRootFromSubgraph --index 0 --size 256 --network goerli``` queries a subgraph for badge awards with ids 0-256, hashes them into a merkle root, and posts it to the SubgraphController so it can be sent to layer 2 while still exploiting subgraph capabilities for full reputational transparency. The root won't be available in the layer 2 Registry contract until the next state sync. Index and size parameters are required so the subgraph can validate merkle roots.
 - ```npx hardhat unfurlMerkleRoot --root {32 bytes} --index 0 --size 256 --network mumbai``` queries a subgraph for badge awards with ids 0-256, constructs a merkle tree, and iterates over each leaf. Every iteration calls the Reigstry contract's ```mint``` function with the required data to prove the badge is legitimate.
