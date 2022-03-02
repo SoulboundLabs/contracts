@@ -5,7 +5,7 @@
 <img width="1301" alt="Screen Shot 2022-03-02 at 11 43 26 AM" src="https://user-images.githubusercontent.com/4196637/156437729-48390b40-d5d8-468c-a69c-71d4610626b0.png">
 
 ## Requirements
-1. Store a throwaway private key and API keys in a secrets.json file in the root directory. A private key is required for ethers to interact with live networks. All other API keys are optional if the corresponding code is removed from hardhat.config.js. The Hardhat config expects for the following in secrets.json:
+1. Store a throwaway private key and API keys in a secrets.json file in the root directory. A private key is required for ethers to interact with live networks. All other API keys are optional if the corresponding code is removed from hardhat.config.js. The Hardhat config expects the following in secrets.json:
    - privateKey (don't use anything with real funds attached)
    - maticVigilKey
    - etherscanKey
