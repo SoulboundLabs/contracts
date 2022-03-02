@@ -2,7 +2,7 @@
 
 ### Soulbound utilizes logic from a subgraph (a tool for indexing blockchains) in order to issue non-transferable on chain reputation. The [Soulbound subgraph](https://thegraph.com/explorer/subgraph?id=BKWqzRUajb4zK3X8LwwEACH2tVgprgEE8ZdsHdknxQEk&view=Overview) awards badges and verifies oracle data posted to the SubgraphController smart contract on mainnet for maximum transparency. The oracle data represents batches of "blockchain achievements," or "badges" that have been earned by Ethereum accounts. Trackable metrics are predefined by the subgraph, and a SubgraphController contract defines badgeworthy behavior by emitting events with metrics and thresholds.
 
-![Soulbound Dapp Design](https://user-images.githubusercontent.com/4196637/156137243-71a114c5-cfd1-4a47-9f76-0207f693d79a.png)
+<img width="1301" alt="Screen Shot 2022-03-02 at 11 43 26 AM" src="https://user-images.githubusercontent.com/4196637/156437729-48390b40-d5d8-468c-a69c-71d4610626b0.png">
 
 ## Requirements
 1. Store a throwaway private key and API keys in a secrets.json file in the root directory. A private key is required for ethers to interact with live networks. All other API keys are optional if the corresponding code is removed from hardhat.config.js. The Hardhat config expects for the following in secrets.json:
