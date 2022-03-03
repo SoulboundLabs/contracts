@@ -3,7 +3,7 @@ const keccak256 = require('keccak256')
 const { gql, request, GraphQLClient } = require("graphql-request");
 
 const EMBLEM_SUBGRAPH_CONTROLLER_CONTRACT_NAME = "EmblemSubgraphController";
-const EMBLEM_SUBGRAPH_CONTROLLER_ADDRESS_GOERLI = "0xF5aBBE2aC04b189F81A572c901C3ad8D068cB2Ae";
+const EMBLEM_SUBGRAPH_CONTROLLER_ADDRESS_GOERLI = "0x59753aaaF864e36eacDce8D68245DE655e028425";
 const EMBLEM_SUBGRAPH_CONTROLLER_ADDRESS_HH = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 const MUMBAI_FX_CHILD = "0xCf73231F28B7331BBe3124B907840A94851f9f11";
@@ -14,11 +14,11 @@ const MAINNET_CHECKPOINT_MANAGER = "0x86e4dc95c7fbdbf52e33d563bbdb00823894c287";
 const MAINNET_FX_ROOT = "0xfe5e5D361b2ad62c541bAb87C45a0B9B018389a2";
 
 const EMBLEM_LIBRARY_CONTRACT_NAME = "EmblemLibrary";
-const EMBLEM_LIBRARY_ADDRESS_MUMBAI = "0x7dC3EaB1bDCf70a3aFd6E18994aa8768906554FE";
+const EMBLEM_LIBRARY_ADDRESS_MUMBAI = "0xE5695Ef652ea323d6f954A55beE09a2e1747e7B0";
 
 const EMBLEM_REGISTRY_CONTRACT_NAME = "EmblemRegistry";
 const EMBLEM_REGISTRY_ADDRESS_HH = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-const EMBLEM_REGISTRY_ADDRESS_MUMBAI = "0xE20b1E52EEAed100989463d9af91ff02C7235096";
+const EMBLEM_REGISTRY_ADDRESS_MUMBAI = "0x7a08e303aB01e2CDbb0eeb0eE76fe877c9B995b6";
 
 const EMBLEM_GQL_ENDPOINT = "https://api.studio.thegraph.com/query/2486/test/2.2.3";
 const EMBLEM_EARNED_BADGE_COUNT_QUERY = gql`
@@ -209,7 +209,6 @@ function hashBadge(earnedBadge) {
 }
 
 task("unfurlMerkleRoot", "mints all badges from a tree")
-.addParam("root", "32 byte hash")
 .addParam("index", "index where the tree starts")
 .addParam("size", "size of tree")
 .setAction(async (taskArgs) => {
@@ -235,22 +234,53 @@ task("unfurlMerkleRoot", "mints all badges from a tree")
         const registryContract = await emblemRegistryContractFactory.attach(EMBLEM_REGISTRY_ADDRESS_MUMBAI);
         console.log("Attached to Registry contract at " + registryContract.address);
 
-        for (let i = parseInt(taskArgs.index); i < parseInt(taskArgs.index) + parseInt(taskArgs.size); i++) {
-            const proof = tree.getHexProof(hashedLeaves[i]);
-            const positions = tree.getProof(hashedLeaves[i]).map(x => x.position === 'right' ? 1 : 0);
+        let badgeStructs = [];
+        let proofs = [];
+        let positions = [];
+        let i = parseInt(taskArgs.index);
+        for (i; i < parseInt(taskArgs.index) + parseInt(taskArgs.size); i++) {
+            proofs.push(tree.getHexProof(hashedLeaves[i]));
+            positions.push(tree.getProof(hashedLeaves[i]).map(x => x.position === 'right' ? 1 : 0));
 
             const solidityBadge = {
                 winner: leaves[i].earnedBadge.badgeWinner.id,
                 badgeDefinitionNumber: leaves[i].earnedBadge.definition.badgeDefinitionNumber
             };
-            // console.log(i + ": " + solidityBadge.winner + "   " + solidityBadge.badgeDefinitionNumber);
-            // console.log(proof.toString());
+            badgeStructs.push(solidityBadge);
 
-            await registryContract.mint(solidityBadge, proof, positions, tree.getHexRoot());
+            if ((i+1) % 16 == 0 && i > 0) {
+                console.log("unfurling batch: (" + (i-15) + ", " + i + ")");
+                await registryContract.unfurlBatch(
+                    badgeStructs.slice(i-15, i+1),
+                    proofs.slice(i-15, i+1),
+                    positions.slice(i-15, i+1),
+                    tree.getHexRoot()
+                );
+            }
         }
     }
     else {
         console.log("minting not supported on " + hre.network.name + " network.");
+    }
+});
+
+
+task("publicizeSoul", "mints a badge using Registry contract")
+.addParam("definitionid", "BadgeDefinitionId")
+.addParam("winner", "address of winner")
+.setAction(async (taskArgs) => {
+    if (hre.network.name == "mumbai") {
+        const registryContract = await emblemRegistryContractFactory.attach(EMBLEM_REGISTRY_ADDRESS_MUMBAI);
+        console.log("Attached to Registry contract at " + registryContract.address);
+
+        const solidityBadge = {
+            winner: taskArgs.winner,
+            badgeDefinitionNumber: taskArgs.definitionid
+        };
+        await registryContract.mint(solidityBadge);
+
+    } else {
+        console.log("no Registry contract on network: " + hre.network.name);
     }
 });
 
