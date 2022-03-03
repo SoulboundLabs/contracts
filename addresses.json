@@ -1,0 +1,25 @@
+{
+  "SoulboundAddresses" : {
+    "SubgraphController": {
+      "goerli": "0x31cF188EbD42E4a94d67Cc8DDA6d5461f90472BA"
+    },
+    "SoulboundLibrary": {
+      "mumbai": "0xf7a46B2491490B67ffCE9C4A0F860B261D976021"
+    },
+    "Registry": {
+      "mumbai": "0xBB5bC881eF218c66909b81040D6f671A1cb10848"
+    },
+    "FxRoot": {
+      "goerli": "0x3d1d3E34f7fB6D26245E6640E1c50710eFFf15bA",
+      "mainnet": "0xfe5e5D361b2ad62c541bAb87C45a0B9B018389a2"
+    },
+    "CheckpointManager": {
+      "goerli": "0x2890bA17EfE978480615e330ecB65333b880928e",
+      "mainnet": "0x86e4dc95c7fbdbf52e33d563bbdb00823894c287"
+    },
+    "FxChild": {
+      "mumbai": "0xCf73231F28B7331BBe3124B907840A94851f9f11",
+      "matic": "0x8397259c983751DAf40400790063935a11afa28a"
+    }
+  }
+}
