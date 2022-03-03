@@ -11,22 +11,32 @@ library EmblemLibrary {
     uint8 badgeDefinitionNumber;
   }
 
+  struct BadgeProof {
+    address winner;
+    uint8 badgeDefinitionNumber;
+    bytes32[] merkleProof;
+    bool[] positions;
+  }
+
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
   bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
   bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
 
   function verify(
-    BadgeStruct memory badgeStruct,
-    bytes32[] memory merkleProof,
-    uint256[] memory positions,
+    BadgeProof memory badgeProof,
     bytes32 merkleRoot
   ) public pure returns (bool) {
 
-    return EmblemMerkleProof.verify(merkleProof, positions, merkleRoot, hashBadge(badgeStruct));
+    return EmblemMerkleProof.verify(
+      badgeProof.merkleProof, 
+      badgeProof.positions, 
+      merkleRoot, 
+      hashBadge(badgeProof.winner, badgeProof.badgeDefinitionNumber)
+    );
   }
 
-  function hashBadge(BadgeStruct memory badgeStruct) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(badgeStruct.winner, badgeStruct.badgeDefinitionNumber));
+  function hashBadge(address winner, uint8 badgeDefinitionNumber) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(winner, badgeDefinitionNumber));
   }
 }
 
@@ -43,7 +53,7 @@ library EmblemMerkleProof {
      */
     function verify(
         bytes32[] memory proof,
-        uint256[] memory positions,
+        bool[] memory positions,
         bytes32 root,
         bytes32 leaf
     ) internal pure returns (bool) {
@@ -52,7 +62,7 @@ library EmblemMerkleProof {
         for (uint256 i = 0; i < proof.length; i++) {
             bytes32 proofElement = proof[i];
 
-            if (positions[i] == 1) {
+            if (positions[i] == true) {
                 // Hash(current computed hash + current element of the proof)
                 computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
             } else {
