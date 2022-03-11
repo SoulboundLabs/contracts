@@ -11,21 +11,27 @@
    - etherscanKey
    - polygonscanKey
    - alchemyGoerliKey
+   - infuraKey
   
 2. run ```npm install``` from the root directory
 3. run ```npx hardhat compile``` to compile smart contracts
 
 ## Hardhat task flow
 1. ```npx hardhat deploySubgraphController --network goerli```
-   - paste the contract address in tasks.js -> EMBLEM_SUBGRAPH_CONTROLLER_ADDRESS_GOERLI
+   - paste the contract address in tasks/addresses.json -> SubgraphController
 2. ```npx hardhat deployRegistry --network mumbai```
-   - paste the library contract address in tasks.js -> EMBLEM_LIBRARY_ADDRESS_MUMBAI
-   - paste the registry contract address in tasks.js -> EMBLEM_REGISTRY_ADDRESS_MUMBAI
+   - paste the library contract address in tasks/addresses.json -> EmblemLibrary
+   - paste the registry contract address in tasks.js -> EmblemRegistry
 3. ```npx hardhat setTunnelMapping --network goerli```
    - points the SubgraphController contract at the layer 2 Registry contract
 4. ```npx hardhat setTunnelMapping --network mumbai```
    - points the Registry contract at layer 1 SubgraphController contract
 
+## To verify the contracts on block explorers, run the following hardhat tasks:
+```npx hardhat verifySubgraphController --network goerli```
+
+```npx hardhat verifyRegistry --network mumbai```
+
 ## The contracts are now ready for bridged communication from Goerli to Mumbai.
 1. ```npx hardhat postMerkleRootFromSubgraph --index 0 --size 256 --network goerli``` queries a subgraph for badge awards with ids 0-256, hashes them into a merkle root, and posts it to the SubgraphController so it can be sent to layer 2 while still exploiting subgraph capabilities for full reputational transparency. The root won't be available in the layer 2 Registry contract until the next state sync. Index and size parameters are required so the subgraph can validate merkle roots.
-2. ```npx hardhat unfurlMerkleRoot --root {32 bytes} --index 0 --size 256 --network mumbai``` queries a subgraph for badge awards with ids 0-256, constructs a merkle tree, and iterates over each leaf. Every iteration calls the Reigstry contract's ```mint``` function with the required data to prove the badge is legitimate. The Registry contract also verifies that it has received the merkle root from EmblemDAO's Polygon Bridge contract.
+2. ```npx hardhat unfurlMerkleRoot --index 0 --size 256 --network mumbai``` queries a subgraph for badge awards with ids 0-256, constructs a merkle tree, and iterates over each leaf. Badge proofs are then sent via the unfurlBatch function and minted in batches of 16 at a time. The Registry contract also verifies that it has received the merkle root from EmblemDAO's Polygon Bridge contract.
