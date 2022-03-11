@@ -5,7 +5,7 @@
 ![Emblem Architecture - Subgraph Bridge Smart Contract Interface](https://user-images.githubusercontent.com/4196637/157934435-81973e96-838d-4eb8-9bcd-1a9a03948e5a.jpeg)
 
 ## Requirements
-1. Store a throwaway private key and API keys in a secrets.json file in the root directory. A private key is required for ethers to interact with live networks. All other API keys are optional if the corresponding code is removed from hardhat.config.js. The Hardhat config expects the following in secrets.json:
+1. Store a throwaway private key and API keys in a secrets.json file in the project's root directory. A private key is required for ethers to interact with live networks. All other API keys are optional if the corresponding code is removed from hardhat.config.js. The Hardhat config expects the following in secrets.json:
    - privateKey (don't use anything with real funds attached)
    - maticVigilKey
    - etherscanKey
@@ -13,7 +13,7 @@
    - alchemyGoerliKey
    - infuraKey
   
-2. run ```npm install``` from the root directory
+2. run ```npm install``` from the project's root directory
 3. run ```npx hardhat compile``` to compile smart contracts
 
 ## Hardhat task flow
@@ -35,3 +35,6 @@
 ## The contracts are now ready for bridged communication from Goerli to Mumbai.
 1. ```npx hardhat postMerkleRootFromSubgraph --index 0 --size 256 --network goerli``` queries a subgraph for badge awards with ids 0-256, hashes them into a merkle root, and posts it to the SubgraphController so it can be sent to layer 2 while still exploiting subgraph capabilities for full reputational transparency. The root won't be available in the layer 2 Registry contract until the next state sync. Index and size parameters are required so the subgraph can validate merkle roots.
 2. ```npx hardhat unfurlMerkleRoot --index 0 --size 256 --network mumbai``` queries a subgraph for badge awards with ids 0-256, constructs a merkle tree, and iterates over each leaf. Badge proofs are then sent via the unfurlBatch function and minted in batches of 16 at a time. The Registry contract also verifies that it has received the merkle root from EmblemDAO's Polygon Bridge contract.
+
+## Purpose
+This subgraph-centric design allows oracles to transparently attest to hashes of arbirarily large amounts of indexed data on mainnet, while offloading badge minting (to Polygon. As long as the subgraph is being indexed on The Graph's decentralized network, anyone can verify the honesty of an oracle with a single query. This unlocks new building blocks for digital cooperation using provable summaries of who's done what on chain.
