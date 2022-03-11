@@ -36,7 +36,7 @@ contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
     }
 
     // issues non-transferable souls in batches of 16 if merkle proofs pass
-    function unfurlSoulBatch(
+    function unfurlBatch(
         EmblemLibrary.BadgeProof[16] calldata badgeProofs,
         bytes32 merkleRoot
     ) public {
