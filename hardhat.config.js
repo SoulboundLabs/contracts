@@ -2,14 +2,16 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("hardhat-gas-reporter");
 require("hardhat-abi-exporter");
-require("./tasks.js");
+require("./tasks/deployment-tasks.js");
+require("./tasks/subgraph-bridge-tasks.js");
 
 const { 
   privateKey, 
   maticVigilKey, 
   etherscanKey, 
   polygonscanKey, 
-  alchemyGoerliKey 
+  alchemyGoerliKey,
+  infuraKey
 } = require('./secrets.json');
 
 
@@ -29,9 +31,13 @@ module.exports = {
       gasPrice: 50000000000
     },
     goerli: {
-      url: "https://eth-goerli.alchemyapi.io/v2/" + alchemyGoerliKey,
+      url: "https://goerli.infura.io/v3/" + infuraKey,
       accounts: [privateKey]
     }
+    // goerli: {
+    //   url: "https://eth-goerli.alchemyapi.io/v2/" + alchemyGoerliKey,
+    //   accounts: [privateKey]
+    // }
   },
   solidity: {
     version: "0.8.0",
