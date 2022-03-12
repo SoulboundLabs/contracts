@@ -1,28 +1,43 @@
 require("@nomiclabs/hardhat-ethers");
+require("@nomiclabs/hardhat-etherscan");
 require("hardhat-gas-reporter");
 require("hardhat-abi-exporter");
+require("./tasks/deployment-tasks.js");
+require("./tasks/subgraph-bridge-tasks.js");
 
+const { 
+  privateKey, 
+  maticVigilKey, 
+  etherscanKey, 
+  polygonscanKey, 
+  alchemyGoerliKey,
+  infuraKey
+} = require('./secrets.json');
 
-const fs = require('fs');
-const privateKey = fs.readFileSync(".secret").toString().trim();
-// const maticVigilKey = fs.readFileSync(".matic-vigil-key").toString().trim();
 
 module.exports = {
-  // defaultNetwork: "matic",
   networks: {
     hardhat: {
     },
     mumbai: {
-      url: "https://rpc-mumbai.maticvigil.com",
+      url: "https://rpc-mumbai.maticvigil.com/v1/" + maticVigilKey,
       accounts: [privateKey],
       gas: 5500000,
       gasPrice: 7000000000
     },
     matic: {
-      url: "https://rpc-mainnet.maticvigil.com/v1/",// + maticVigilKey,
+      url: "https://rpc-mainnet.maticvigil.com/v1/" + maticVigilKey,
       accounts: [privateKey],
       gasPrice: 50000000000
+    },
+    goerli: {
+      url: "https://goerli.infura.io/v3/" + infuraKey,
+      accounts: [privateKey]
     }
+    // goerli: {
+    //   url: "https://eth-goerli.alchemyapi.io/v2/" + alchemyGoerliKey,
+    //   accounts: [privateKey]
+    // }
   },
   solidity: {
     version: "0.8.0",
@@ -47,9 +62,19 @@ module.exports = {
   },
   abiExporter: {
     path: './data/abi',
+    runOnCompile: true,
     clear: true,
     flat: true,
+    only: [],
     spacing: 2,
-    pretty: false
+    pretty: true,
+  },
+  etherscan: {
+    apiKey: {
+      mainnet: etherscanKey,
+      goerli: etherscanKey,
+      polygon: polygonscanKey,
+      polygonMumbai: polygonscanKey
+    }
   }
 }
