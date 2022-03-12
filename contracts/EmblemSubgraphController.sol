@@ -11,7 +11,7 @@ contract EmblemSubgraphController is AccessControl, FxBaseRootTunnel {
     event BadgeDefinitionCreated(uint32 indexed _definitionNumber, uint32 _metric, uint256 _threshold);
     event BadgeDefinitionFrozen(uint32 indexed _definitionNumber);
 
-    uint32 public nextBadgeDefinitionNumber;
+    uint32 private nextBadgeDefinitionNumber;
 
     constructor(address _checkpointManager, address _fxRoot) FxBaseRootTunnel(_checkpointManager, _fxRoot) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);

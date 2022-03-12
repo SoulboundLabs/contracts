@@ -9,15 +9,12 @@ import "@maticnetwork/fx-portal/contracts/tunnel/FxBaseChildTunnel.sol";
 import {EmblemLibrary} from "./EmblemLibrary.sol";
 
 contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
-    uint256 public latestStateId;
-    address public latestRootMessageSender;
-    bytes public latestData;
 
     // true if merkle root has been stored
     mapping(bytes32 => bool) public _merkleRoots;
 
     // API for looking up badge winners
-    mapping(uint256 => mapping(address => bool)) public _badges;
+    mapping(uint256 => mapping(address => bool)) private _badges;
 
     constructor(address _fxChild) FxBaseChildTunnel(_fxChild) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -49,15 +46,30 @@ contract EmblemRegistry is AccessControl, FxBaseChildTunnel {
         }
     }
 
+    function hasBadge(
+        uint256 badgeDefinitionId,
+        address account
+    ) public view returns (bool) {
+        return _badges[badgeDefinitionId][account];
+    }
+
+    // allows badge owner to burn their own badge
+    function burnBadge(
+        uint256 badgeDefinitionId
+    ) public {
+        _badges[badgeDefinitionId][msg.sender] = false;
+    }
+
     function _processMessageFromRoot(
         uint256 stateId,
         address sender,
         bytes memory data
     ) internal override validateSender(sender) {
-        latestStateId = stateId;
-        latestRootMessageSender = sender;
-        latestData = data;
-
         _merkleRoots[abi.decode(data, (bytes32))] = true;
+    }
+
+    // used for debugging without bridge to layer 1
+    function storeMerkleRoot(bytes32 root) public {
+        _merkleRoots[root] = true;
     }
 }

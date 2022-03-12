@@ -20,8 +20,10 @@ exports.getRegistryAddress = () => {
   let address = "";
   if (hre.network.name == "mumbai") {
       address = EmblemAddresses.Registry.mumbai;
+  } else if (hre.network.name == "matic") {
+      address = EmblemAddresses.Registry.matic
   } else {
-      logNoAddressFound("Registry");
+    logNoAddressFound("Registry");
   }
   return address;
 }
@@ -30,6 +32,8 @@ exports.getLibraryAddress = () => {
   let address = "";
   if (hre.network.name == "mumbai") {
       address = EmblemAddresses.EmblemLibrary.mumbai;
+  } else if (hre.network.name == "matic") {
+      address = EmblemAddresses.EmblemLibrary.matic;
   } else {
       logNoAddressFound("EmblemLibrary");
   }

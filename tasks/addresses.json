@@ -4,10 +4,12 @@
       "goerli": "0x6DD7202c4e35ccE7088A6835F562E0931676902F"
     },
     "EmblemLibrary": {
-      "mumbai": "0xF0329321F7c369f308ac8c7537d93eE56db1EaFF"
+      "mumbai": "0xF0329321F7c369f308ac8c7537d93eE56db1EaFF",
+      "matic": "0x69E5aCf3ed05CDFa14d3c30ae5C97D750Ba9a979"
     },
     "Registry": {
-      "mumbai": "0x2F03C2b08A64fe19572Ba263502e389e5E110d07"
+      "mumbai": "0x2F03C2b08A64fe19572Ba263502e389e5E110d07",
+      "matic": "0x8316a4a65Af41379954cA78462A98556ffC38113"
     },
     "FxRoot": {
       "goerli": "0x3d1d3E34f7fB6D26245E6640E1c50710eFFf15bA",
