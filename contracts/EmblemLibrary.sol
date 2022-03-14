@@ -41,7 +41,7 @@ library EmblemLibrary {
 }
 
 /**
- * BadgethMerkleProof is identical to OpenZeppelin's MerkleProof library with the 
+ * EmblemMerkleProof is identical to OpenZeppelin's MerkleProof library with the 
  * addition of a positions array to avoid sorting
  */ 
 library EmblemMerkleProof {
