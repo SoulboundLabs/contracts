@@ -6,6 +6,7 @@
     "hardhat": "^2.6.4",
     "hardhat-abi-exporter": "^2.8.0",
     "hardhat-gas-reporter": "^1.0.4",
+    "isomorphic-fetch": "^3.0.0",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.27"
   },

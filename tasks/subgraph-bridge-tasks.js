@@ -1,6 +1,7 @@
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
 const { gql, request, GraphQLClient } = require("graphql-request");
+require("isomorphic-fetch");
 const { 
     EMBLEM_REGISTRY_CONTRACT_NAME,
     EMBLEM_SUBGRAPH_CONTROLLER_CONTRACT_NAME,
@@ -10,6 +11,8 @@ const {
 } = require("./address-helpers");
 
 const EMBLEM_GQL_ENDPOINT = "https://api.studio.thegraph.com/query/2486/test/2.2.3";
+const EMBLEM_DECENTRALIZED_GQL_ENDPOINT = "https://gateway.thegraph.com/api/003ad7b617f9ce7f352c3c6ef7085269/subgraphs/id/BKWqzRUajb4zK3X8LwwEACH2tVgprgEE8ZdsHdknxQEk";
+
 const EMBLEM_EARNED_BADGE_COUNT_QUERY = gql`
     query getMerkleLeaves($startingIndex: Int, $treeSize: Int) {
         earnedBadgeCounts(first: $treeSize, skip: $startingIndex, orderBy: globalBadgeNumber) {
@@ -24,6 +27,33 @@ const EMBLEM_EARNED_BADGE_COUNT_QUERY = gql`
         }
     }`
 
+task("logAttestationCIDs", "fetches the first EarnedBadge entity and logs the request+response CID's from the attestation.")
+.setAction(async () => {
+
+    const queryString = "{earnedBadges(first:1,block:{hash:\"0x018dbfdbc6cfcbc380b164b779e8297a01faf5903ba89e06950c900cd767cde3\"}){id}}";
+    const query = JSON.stringify({ query: queryString, variables: {} });
+    const badgeRequest = new Request(EMBLEM_DECENTRALIZED_GQL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        variables: {},
+        body: query
+    });
+
+    var attestation = "";
+    await fetch(badgeRequest)
+    .then(response => {
+        attestation = JSON.parse(response.headers.get('graph-attestation'));
+        return response.text();
+    })
+    .then(text => {
+        console.log("request: " + query.toString());
+        console.log("expected attestation requestCID: " + keccak256(query.toString()).toString('hex'));
+        console.log("actual attestation requestCID: " + attestation.requestCID);
+        console.log("\nresponse: " + text);
+        console.log("expected attestation responseCID: " + keccak256(text).toString('hex'));
+        console.log("actual attestation responseCID: " + attestation.responseCID);
+    });
+});
 
 task("postMerkleRootFromSubgraph", "queries an EmblemDAO subgraph for a merkle tree of BadgeAwards")
 .addParam("index", "index where the tree starts")
